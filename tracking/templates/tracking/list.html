@@ -1,0 +1,52 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+
+<table id="table" class="table table-hover table-mc-light-blue">
+  <thead>
+    <tr>
+      <th></th>
+      <th scope="col">Flight Number</th>
+      <th scope="col">Airline</th>
+      <th scope="col">Origin</th>
+      <th scope="col">Destination</th>
+      <th scope="col">Schedule delay(min)</th>
+      <th scope="col">Notification</th>
+      <th scope="col">Enable/Disable</th>
+      <th scope="col">Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for uf in user_flights %}
+    <tr>
+      <td>{{forloop.counter}}</td>
+      <td>{{uf.flight.flight_number}}</td>
+      <td>{{uf.flight.airline}}</td>
+      <td>{{uf.flight.origin}}</td>
+      <td>{{uf.flight.destination}}</td>
+      <td>{{uf.schedule_delay}}</td>
+      <td>{% if uf.status %}<span style="color:green"> On</span> {%else%} <span style="color:red"> OFF</span> {%endif%}</td>
+      <td>{% if uf.status %}<a href="{% url 'tracking:disable_tracking' pk=uf.pk %}">Disable</a>{%else%}<a href="{% url 'tracking:enable_tracking' pk=uf.pk %}">Enable</a>{%endif%}</td>
+      <td>
+      <form method="POST" action="{% url 'tracking:delete_tracking' pk=uf.pk %}">
+        {% csrf_token %}<input style="cursor:pointer; font-size:10px; background-color:coral; padding: 11px 0px;" type="submit" value="DELETE">
+     </form>
+    </td>
+    </tr>
+    {% empty %} 
+    <tr>
+      <td>No item in the list!</td>
+    
+    </tr>
+
+    {% endfor %}
+  </tbody>
+</table>
+
+
+
+
+
+
+{% endblock %}

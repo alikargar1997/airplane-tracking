@@ -1,0 +1,95 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres
+    restart: always
+    hostname: postgresql
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: supersecretpass
+      POSTGRES_DB: airplane_tracking
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+        - "5432:5432"
+  django:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+    command: bash -c "python manage.py migrate && gunicorn airplane_tracking.asgi:application -k gevent --worker-connections=1000 -w=3  -b 0.0.0.0:6688"
+    volumes:
+      - .:/app
+      - static_volume:/static
+      - media_volume:/media
+    environment:
+      DB_NAME: airplane_tracking
+      DB_USER: admin
+      DB_PASS: supersecretpass
+      DB_HOST: postgresql
+      DB_PORT: 5432
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+  celery_worker:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+    command: bash -c "celery -A airplane_tracking worker --loglevel=info --without-gossip"
+    environment:
+      DB_NAME: airplane_tracking
+      DB_USER: admin
+      DB_PASS: supersecretpass
+      DB_HOST: postgresql
+      DB_PORT: 5432
+    depends_on:
+      - postgres
+      - redis
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+    command: bash -c "celery -A airplane_tracking beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    environment:
+      DB_NAME: airplane_tracking
+      DB_USER: admin
+      DB_PASS: supersecretpass
+      DB_HOST: postgresql
+      DB_PORT: 5432
+    depends_on:
+      - postgres
+      - redis
+      - celery_worker
+      - mailcatcher
+
+  mailcatcher:
+    restart: on-failure
+    image: dockage/mailcatcher:0.8.2
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
+  nginx:
+    build: ./compose/nginx
+    ports:
+      - 1337:80
+    volumes:
+      - static_volume:/static
+      - media_volume:/media
+    depends_on:
+      - django
+
+  redis:
+    restart: always
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres:
+  static_volume:
+  media_volume:

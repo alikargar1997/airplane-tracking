@@ -1,0 +1,20 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+
+<div class="signup-content tracking-create">
+    <div class="tracking-form">
+        <form method="POST" class="register-form" id="tracking-form">
+            <h2>Start Tracking</h2>
+            {% csrf_token %}
+            {{ form.as_p }}         
+            <div class="form-submit">
+                <input type="reset" value="Reset All" class="submit" name="reset" id="reset" />
+                <input type="submit" value="Submit Form" class="submit" name="submit" id="submit" />
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

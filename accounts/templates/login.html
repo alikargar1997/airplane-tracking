@@ -1,0 +1,24 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+
+<div class="signup-content">
+    <div class="signup-img">
+        <img src="{% static 'images/signup-img.jpg' %}" alt="">
+    </div>
+    <div class="signup-form">
+        <form method="POST" class="register-form" id="login-form">
+            <h2>User Login</h2>
+            {% csrf_token %}
+            {{ form.as_p }}         
+            <div class="form-submit">
+                <input type="reset" value="Reset All" class="submit" name="reset" id="reset" />
+                <input type="submit" value="Login" class="submit" name="submit" id="submit" />
+            </div>
+            <p>Don't have an account? <a href="{% url 'accounts:signup' %}">Sign up</a></p>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

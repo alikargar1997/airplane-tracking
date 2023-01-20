@@ -1,0 +1,43 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}{% endblock %}</title>
+
+    <!-- Font Icon -->
+    <link rel="stylesheet" href="{% static 'fonts/material-icon/css/material-design-iconic-font.min.css' %}">
+
+    <!-- Main css -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+</head>
+<body>
+    {% if user.is_authenticated %}
+<header>
+    <div class="container">
+        <ul>
+            <li><a href="{% url 'tracking:list_tracking' %}">List</a></li>
+
+            <li><a href="{% url 'tracking:create_tracking' %}">Create</a></li>
+            <li><a href="{% url 'accounts:signout' %}">Logout</a></li>
+        </ul>
+    </div>
+</header>
+{%endif%}
+    <div class="main">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+
+    </div>
+
+    <!-- JS -->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+</html>
